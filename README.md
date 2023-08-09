@@ -1,6 +1,9 @@
 # FSB(Flying Super Board)
 
+<br>
 FSB(보드게임 복합 커뮤니티 사이트)는 국비학원에서 진행한 파이널 팀프로젝트입니다.
+
+----
 
 ![메인페이지](https://github.com/dadomee/FSB/assets/137809118/1d847855-81c2-4a3b-baac-9c59cce5654a)
 
@@ -23,7 +26,7 @@ FSB(보드게임 복합 커뮤니티 사이트)는 국비학원에서 진행한 
   + eclipse
   + spring
   + oracle
-+S/W : oracle sqldeveloper
+  + S/W : oracle sqldeveloper
 
 ## 활용 라이브러리, API
 
@@ -44,7 +47,7 @@ FSB(보드게임 복합 커뮤니티 사이트)는 국비학원에서 진행한 
    + 기능 : 게시판 CRUD, 댓글 CRUD, 글목록 검색 작업, 다중 이미지, 다중 파일 업,다운로드
    + 설명 : 자유, 익명, 중고게시판으로 나누어져 있으며,
       보드게임에 대해 자유롭게 소통할 수 있는 회원전용 게시판 입니다.
-   + Ajax를 이용한 비동기식 댓글 수정,삭제, 답글 입력을 구현했습니다.
+      Ajax를 이용한 비동기식 댓글 수정,삭제, 답글 입력을 구현했습니다.
 
 ![image](https://github.com/dadomee/FSB/assets/137809118/f9ec9517-a3a8-4d6a-a9a6-26e53005a793)
 <br>
