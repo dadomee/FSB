@@ -64,8 +64,10 @@ public class BoardController {
 		ModelAndView mav = new ModelAndView();
 		HttpSession session = req.getSession();
 		session.setAttribute("upPath", session.getServletContext().getRealPath("resources/images"));
-		
-		//공지사항 리스트 
+
+		System.out.println("경로"+session.getAttribute("upPath"));
+
+		//공지사항 리스트
 		String mode = req.getParameter("mode");
 		List<NoticeDTO> nlist =boardMapper.nlistBoard(mode);
 		
