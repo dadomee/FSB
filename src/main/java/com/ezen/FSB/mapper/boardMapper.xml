@@ -161,7 +161,7 @@
 	<select id="replylist" resultType="BoardDTO">
 		select * from f_board
 		         where board_anony_check = 0
-		         not board_content='-'
+		         and not board_content='-'
 		         order by board_replycount desc
 	</select>
 	<!-- 조회수 높은 순  -->
@@ -169,30 +169,26 @@
 		select * from f_board
 		         where board_anony_check = 0
 		           and not board_content='-'
-		         order by board_readcount desc
-	</select>
+		         order by board_readcount desc</select>
 	
 	<!-- 댓글 많은 수 -->
 	<select id="replylist_a" resultType="BoardDTO">
 		select * from f_board
 		         where board_anony_check = 1
 		           and not board_content='-'
-		         order by board_replycount desc
-	</select>
+		         order by board_replycount desc</select>
 	<!-- 조회수 높은 순  -->
 	<select id="readlist_a" resultType="BoardDTO">
 		select * from f_board
 		         where board_anony_check = 1
 		           and not board_content='-'
-		         order by board_readcount desc
-	</select>
+		         order by board_readcount desc</select>
 	<!-- 자유 익명 댓글 가져오기 -->
 	<select id="getReply" parameterType="int" resultType="Board_ReplyDTO">
 		select b.*,m.mem_nickname,m.mem_img
 		from(select * from f_board_reply
 		     where br_num =#{br_num}) b
-		    inner join f_member m on b.mem_num = m.mem_num
-	</select>
+		    inner join f_member m on b.mem_num = m.mem_num</select>
 	
 	<!--메인 리스트에 댓글 수 나타내기 위해 보드 리스트에 추가 -->
 	<update id="setReplycount" parameterType="map">
