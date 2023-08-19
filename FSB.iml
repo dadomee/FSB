@@ -15,4 +15,10 @@
       <configuration />
     </facet>
   </component>
+<<<<<<< HEAD
+=======
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="c40ac10e-4a70-419f-bfee-09b24cba2166" />
+  </component>
+>>>>>>> parent of f8c0a80 (Merge branch 'main' of https://github.com/dadomee/FSB)
 </module>
