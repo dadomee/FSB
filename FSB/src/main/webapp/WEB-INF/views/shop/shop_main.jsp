@@ -24,7 +24,7 @@
 <div align="center">
    <p>
       <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample">
-          	상세보기이이이이이
+          	상세보기
       </button>
    </p>
    <div class="collapse collapse-horizontal" id="collapseWidthExample">

@@ -58,41 +58,32 @@ public class BoardController {
 	@Resource(name = "uploadPath")
 	private String upPath;
 	
-	//mode로 자유게시판,익명게시판, 중고게시판 나누었음
-	//자유게시판 mode = ""
-	//익명게시판 mode = "anony"
-	//중고게시판 ( 나중에 컨트롤러만 분리했음 ) mode = "sh"
-	
 	//자유게시판 리스트 
 	@RequestMapping("/board_free.do")
 	public ModelAndView board_free_list(HttpServletRequest req, java.util.Map<String, Integer> params) {
 		ModelAndView mav = new ModelAndView();
 		HttpSession session = req.getSession();
 		session.setAttribute("upPath", session.getServletContext().getRealPath("resources/images"));
-
-
-		//공지사항 리스트
-		String mode = req.getParameter("mode");
-		//mode로 게시판 마다 다른 공지사항 가져옴
 		
+		//공지사항 리스트 
+		String mode = req.getParameter("mode");
 		List<NoticeDTO> nlist =boardMapper.nlistBoard(mode);
 		
-		//조회수 순 (자유게시판)
+		//조회수 순 
 		List<BoardDTO> readlist = boardMapper.readlist();
 		mav.addObject("readlist", readlist);
 		//댓글순
 		List<BoardDTO> replylist = boardMapper.replylist();
 		mav.addObject("replylist", replylist);
 			//페이지 넘버
-		int pageSize = 10; // 한페이지에 글 몇개 들어가는지.
+		int pageSize = 10;
 		
-		//게시글 목록 쪽수
 		String pageNum = req.getParameter("pageNum");
 		if (pageNum == null) {
 			pageNum = "1";
 		}
-		int currentPage = Integer.parseInt(pageNum); // 현재 페이지 
-		int startRow = (currentPage - 1) * pageSize + 1; 
+		int currentPage = Integer.parseInt(pageNum);
+		int startRow = (currentPage - 1) * pageSize + 1;
 		int endRow = startRow + pageSize - 1;
 		int count = boardMapper.getCountBoard();
 		params.put("start", startRow);
@@ -104,8 +95,6 @@ public class BoardController {
 		if (count > 0) {
 			list = boardMapper.listBoard(params);
 			int pageCount = (count / pageSize) + (count % pageSize == 0 ? 0 : 1);
-			//삼항 조건문 true면 0 false면 1
-			
 			int pageBlock = 2;
 			int startPage = (currentPage - 1) / pageBlock * pageBlock + 1;
 			int endPage = startPage + pageBlock - 1;
@@ -182,7 +171,7 @@ public class BoardController {
 		mav.setViewName("board/list_anony");
 		return mav;
 	}
-	//자유게시판 작성, 익명 게시판 글 작성 폼 띄우기
+	//자유게시판 작성, 익명 게시판 글작성
 	@RequestMapping(value = "/write_board.do", method = RequestMethod.GET)
 	public ModelAndView writeFormBoard(HttpServletRequest req, String mode) {
 		int num = 0, re_group = 0, re_step = 0, re_level = 0;
@@ -198,7 +187,7 @@ public class BoardController {
 			}
 		String snum = req.getParameter("board_num");
 		
-		if (snum != null) { // 만약 넘어온 board_num 있으면 새글이 아니라 답글임.
+		if (snum != null) {
 			num = Integer.parseInt(snum);
 			re_group = Integer.parseInt(req.getParameter("board_re_group"));
 			re_step = Integer.parseInt(req.getParameter("board_re_step"));
@@ -234,29 +223,29 @@ public class BoardController {
 					req.setAttribute("url","login.do" );
 					return "message";
 				}
-			if(mode.equals("anony")) { //익명게시판에서 폼을 보냈을 경우 익명 셋팅
+			if(mode.equals("anony")) {
 				dto.setBoard_anony_check(1);
 				req.setAttribute("board_anony_check",dto.getBoard_anony_check());
 			}
 			req.setAttribute("mode", "all");
-			dto.setBoard_ip(req.getRemoteAddr()); // ip 받아서 set
+			dto.setBoard_ip(req.getRemoteAddr());
 			
 			//이미지 받기
-			MultipartHttpServletRequest mr = (MultipartHttpServletRequest) req; // multipart로 사진받기
+			MultipartHttpServletRequest mr = (MultipartHttpServletRequest) req;
 			MultipartFile mf = mr.getFile("board_img1");
 			MultipartFile mf2 = mr.getFile("board_img2");
 			MultipartFile mf3 = mr.getFile("board_img3");
 			MultipartFile mf4 = mr.getFile("board_img4");
 			
-			String board_img1 = mf.getOriginalFilename(); //사진 받아온 이름
+			String board_img1 = mf.getOriginalFilename();
 			String board_img2 = mf2.getOriginalFilename();
 			String board_img3 = mf3.getOriginalFilename();
 			String board_img4 = mf4.getOriginalFilename();
 			
 			UUID uuid = UUID.randomUUID(); //이미지 중복 시 엑스박스 방지용 랜덤 파일명
 
-			String upPath = session.getServletContext().getRealPath("/resources/img"); // 이미지용 upPath
-			String upPath1 = session.getServletContext().getRealPath("/resources/files"); // 파일 업로드 upPath1
+			String upPath = session.getServletContext().getRealPath("/resources/img");
+			String upPath1 = session.getServletContext().getRealPath("/resources/files");
 			session.setAttribute("upPath1", upPath1);
 			session.setAttribute("upPath", upPath);
 			
@@ -275,9 +264,9 @@ public class BoardController {
 			}
 				
 			 if (!mf2.isEmpty()) {
-				board_img2 = uuid.toString() + "_" + board_img2; // 랜덤 파일명 붙여주기 
+				board_img2 = uuid.toString() + "_" + board_img2;
 				File file2 = new File(upPath, board_img2);
-				mf2.transferTo(file2); // 이미지 올려주기
+				mf2.transferTo(file2);
 				dto.setBoard_img2(board_img2);
 				
 			} else if (mf2.isEmpty()) {
@@ -311,12 +300,11 @@ public class BoardController {
 			
 			int res = boardMapper.insertBoard(dto);
 			if (res > 0) {
-				  File fileCheck = new File(upPath1); // 업로드 된 파일 check
-			         if (!fileCheck.exists()) // 만약 파일이 없다면, 
-			            fileCheck.mkdirs(); //상위 디렉토리 만들어주기
+				  File fileCheck = new File(upPath1);
+			         if (!fileCheck.exists())
+			            fileCheck.mkdirs();
 			         List<Map<String, String>> fileList = new ArrayList<>();
-			         if(multiFileList == null || multiFileList.get(0).getOriginalFilename().equals("")) { // writeform에서 다중파일 담아서 매개변수로 받아옴.
-			        	 // 만약 파일 없으면 그냥 게시글 등록
+			         if(multiFileList == null || multiFileList.get(0).getOriginalFilename().equals("")) {
 			        	 if(mode.equals("anony")) {
 			 				req.setAttribute("msg", "게시글 등록 성공");
 			 				req.setAttribute("url", "board_anony.do?mode=anony");
@@ -325,16 +313,16 @@ public class BoardController {
 			 			req.setAttribute("url", "board_free.do?mode=");
 			             return "message";
 			 			}
-			         }else { // 만약 파일이 있다면 
-			         for (int i = 0; i < multiFileList.size(); i++) { //for문으로 파일 이름 받아오기, 사이즈 받아오기
+			         }else {
+			         for (int i = 0; i < multiFileList.size(); i++) {
 			            String originFile = multiFileList.get(i).getOriginalFilename();
 			            int filesize = (int) multiFileList.get(i).getSize();
-			            String ext = originFile.substring(originFile.lastIndexOf(".")); //원래이름 확장자 앞에서 자르기 
-			            String changeFile = UUID.randomUUID().toString() + ext;// 원래이름에 새로운 랜덤이름 붙여주기
-			            fdto.setFilename(originFile); //원래 파일이름
-			            fdto.setSavename(changeFile);//db에 저장될 새로운 파일이름 
+			            String ext = originFile.substring(originFile.lastIndexOf("."));
+			            String changeFile = UUID.randomUUID().toString() + ext;
+			            fdto.setFilename(originFile);
+			            fdto.setSavename(changeFile);
 			            fdto.setFilesize(filesize);
-			            int board_num = boardMapper.maxRe_group(); // 최신글번호 가져오기 (방금 등록처리된  글)
+			            int board_num = boardMapper.maxRe_group(); // 최신글번호 가져오기
 			          	fdto.setBoard_num(board_num);
 			            int res2 = boardMapper.fileInsert(fdto);
 			            Map<String, String> map = new HashMap<>();
@@ -348,7 +336,7 @@ public class BoardController {
 			        	 if (fileList.size()!=0) {
 			            for (int i = 0; i < multiFileList.size(); i++) {
 			               File uploadFile = new File(upPath1 + "\\" + fileList.get(i).get("savename"));
-			               multiFileList.get(i).transferTo(uploadFile); //i번째 파일 꺼낸다음에 업로드 해주기.
+			               multiFileList.get(i).transferTo(uploadFile);
 			            }
 			        	 }
 			            System.out.println("다중 파일 업로드 성공");
@@ -356,7 +344,6 @@ public class BoardController {
 			            System.out.println("다중파일 업로드 실패 ㅠㅠ");
 			            for (int i = 0; i < multiFileList.size(); i++) {
 			               new File(upPath1 + "\\" + fileList.get(i).get("savename")).delete();
-			               //위에서 만들어준 저장명 지워주기
 			            }
 			            e.printStackTrace();
 			         }
@@ -384,8 +371,8 @@ public class BoardController {
 		HttpSession session=req.getSession();
 		//로그인 체크 
 			MemberDTO mdto = (MemberDTO)session.getAttribute("login_mem");
-			if(mdto == null) { // 로그인 되어있는지 체크
-				session.invalidate(); 
+			if(mdto == null) {
+				session.invalidate();
 				mav.setViewName("message_back");
 				mav.addObject("msg","로그인 해주세요" );
 				return mav;
@@ -399,23 +386,22 @@ public class BoardController {
 		            String original_name = null;
 		            String save_name = null;
 		      
-		            for(BoardFilesDTO fdto : list) { // 같은 이름의 파일이 있는지 확인
+		            for(BoardFilesDTO fdto : list) {
 		               if(fdto.getFilename().equals(name)){
 		                  original_name = fdto.getFilename();
 		                  save_name = fdto.getSavename();
 		               }
 		            }
-		            //파일 다운로드 부분은 저도 조금 더 공부하고 주석 달게요 .. 
-		            original_name = new String(original_name.getBytes("UTF-8"), "iso-8859-1"); 
+		            original_name = new String(original_name.getBytes("UTF-8"), "iso-8859-1");
 		            File file = new File(session.getServletContext().getRealPath("/resources/files/"+save_name));
-		            FileInputStream fis = new FileInputStream(file); // 파일 읽기 
+		            FileInputStream fis = new FileInputStream(file);
 		               ServletOutputStream sos = resp.getOutputStream();
 		               
 		               resp.setContentType("application/octet-stream");
 		               resp.setContentLength((int) file.length());
 		               resp.setHeader("Content-Disposition", "attachment;filename=\""+ original_name +"\"");
 		         
-		               byte[] buffer = new byte[4096]; 
+		               byte[] buffer = new byte[4096];
 		               int bytesRead;
 		               while ((bytesRead = fis.read(buffer)) != -1) {
 		                   sos.write(buffer, 0, bytesRead);
@@ -429,7 +415,7 @@ public class BoardController {
 	}
 	//공지사항 상세보기
 	
-	@RequestMapping("/board_noti_content.do") 
+	@RequestMapping("/board_noti_content.do")
 	public ModelAndView boardNotiContent(HttpServletRequest req,@RequestParam int n_num,@RequestParam String mode) {
 		ModelAndView mav = new ModelAndView("/board/content_noti");
 		NoticeDTO dto = boardMapper.getNotice(n_num);
@@ -466,8 +452,7 @@ public class BoardController {
 		 mav.addObject("listFile", flist);
 		
 		// 여기부터 승미가 만짐 (매개변수 int board_num -> Map<String, Integer> params 로 바꿈
-		// 댓글 목록 페이지 수 
-		 int pageSize = 10;
+		int pageSize = 10;
 		if (pageNum == 0) {
 			pageNum = 1;
 		}
@@ -509,7 +494,6 @@ public class BoardController {
 	
 	}
 	//게싯글, 댓글 신고 창 띄우기
-	//저는 이 매핑주소에서 자유,익명,중고 게시판의 게시글 댓글의 신고창을 다 띄웠습니다.
 	@RequestMapping("/report_board.do")
 		public ModelAndView reportBoard(HttpServletRequest req,String mode) {
 			ModelAndView mav = new ModelAndView("message");
@@ -628,7 +612,6 @@ public class BoardController {
 				mav.addObject("msg","로그인 해주세요" );
 				return mav;
 			}
-			//해당 게시글 번호랑 댓글 번호를 받아옵니다.
 			int board_num = dto.getBoard_num();
 			int br_num = dto.getBr_num();
 			dto.setBoard_num(board_num);
@@ -679,7 +662,6 @@ public class BoardController {
 			return mav;
 		}
 //자유,익명 대댓글
-	//이 부분은 ajax로 해당 댓글 밑에 바로 작성 form을 띄우는 작업입니다.
 	@ResponseBody
 	@RequestMapping("/re_reply.do")
 	public ModelAndView re_reply(HttpServletRequest req,int br_num,int pageNum,int board_num) {
@@ -718,7 +700,7 @@ public class BoardController {
 				mav.addObject("msg","로그인 해주세요" );
 				return mav;
 			}
-		Board_replyDTO dto = boardMapper.getReply(br_num); // 수정할 댓글 정보 가져오기
+		Board_replyDTO dto = boardMapper.getReply(br_num);
 		mav.addObject("dto",dto);
 		mav.addObject("br_num",br_num);
 		mav.addObject("pageNum", pageNum);
@@ -737,10 +719,10 @@ public class BoardController {
 				mav.addObject("msg","로그인 해주세요" );
 				return mav;
 			}
-		String br_num = (String)params.get("br_num"); //댓글 번호를 가져온 후 
+		String br_num = (String)params.get("br_num");
 		Board_replyDTO dto = boardMapper.getReply(Integer.parseInt(br_num));
 		//String pageNum = (String)params.get
-		dto.setBr_content((String)params.get("br_content")); // 수정한 내용 set 해줍니다.
+		dto.setBr_content((String)params.get("br_content"));
 		boardMapper.updateReply(dto);
 		
 		return mav;
@@ -773,7 +755,7 @@ public class BoardController {
 		if (res > 0) {
 			String upPath = (String) session.getAttribute("upPath");
 
-			File file1 = new File(upPath, board_img1); // 이미지랑 파일 싹다 지워줍니다.
+			File file1 = new File(upPath, board_img1);
 			File file2 = new File(upPath, board_img2);
 			File file3 = new File(upPath, board_img3);
 			File file4 = new File(upPath, board_img4);
@@ -850,6 +832,7 @@ public class BoardController {
 		String board_img2 = mf2.getOriginalFilename();
 		String board_img3 = mf3.getOriginalFilename();
 		String board_img4 = mf4.getOriginalFilename();
+		String filename = mf5.getOriginalFilename();
 		
 		String upPath = session.getServletContext().getRealPath("/resources/img");
 		String upPath1 = session.getServletContext().getRealPath("/resources/files");
@@ -919,12 +902,10 @@ public class BoardController {
 		} else if (mf4.isEmpty()) {
 			dto.setBoard_img4(req.getParameter("board_img4-2"));
 		}
-
 		BoardFilesDTO dto2 = new BoardFilesDTO();
 		String mode = req.getParameter("mode");
 		int res = boardMapper.updateBoard(dto);
 		if (res > 0) {
-			// 파일 업다운로드 수정
 			 File fileCheck = new File(upPath1);
 	         if (!fileCheck.exists())
 	            fileCheck.mkdirs();
@@ -955,7 +936,6 @@ public class BoardController {
 	               }
 	            }
 	         }
-	         //수정 할 때 새로운 파일 추가시.
 	         for (int i = 0; i < multiFileList.size(); i++) {
 	            String originFile = multiFileList.get(i).getOriginalFilename();
 	            int filesize = (int) multiFileList.get(i).getSize();
@@ -1006,9 +986,7 @@ public class BoardController {
 	@RequestMapping("board_free_find.do")
 	public ModelAndView freeFind(HttpServletRequest req, @RequestParam java.util.Map<String,Object> params) {
 		ModelAndView mav = new ModelAndView("board/list_free");
-			
-		// select 문에서 받아온 값을 지정해줍니다.
-		String select = (String) params.get("select");
+			String select = (String) params.get("select");
 			if(select.equals("writer")) {
 				select = "m.mem_nickname";
 			}else if(select.equals("title")){
@@ -1016,7 +994,6 @@ public class BoardController {
 			}else {
 				select = "board_content";
 			}
-			//검색창에 입력한 string을 받아옵니다.
 			String searchString =(String) params.get("searchString");
 			
 			params.put("search", select);
