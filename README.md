@@ -40,9 +40,22 @@ FSB(보드게임 복합 커뮤니티 사이트)는 국비학원에서 진행한 
 + Open Source
    + Naver developers (login)
    + kakao developers (address,map)
+<br>
+
+## ERD (담당 기능 부분)
+
+![FSB_ERD](https://github.com/dadomee/FSB/assets/137809118/9b49a2dd-5f18-4c86-94f1-cea22251eb56)
+<br>
 
 ## 담당 기능
 
+    커뮤니티 
+        - 게시판 CRUD, 댓글 CRUD, 글목록 검색, 정렬 , 다중 이미지 첨부, 다중 파일 업, 다운로드 , 게시글 댓글 신고 기능
+    비즈니스 매장지도
+         - 매장 지도 검색, 카카오 지도 API, 카카오 주소 API 활용
+    비즈니스 프로필
+        - 프로필에 매장정보, 위치 확인, 매장 전용 쿠폰 발급, 매장 리뷰
+        
 1. 커뮤니티
    + 기능 : 게시판 CRUD, 댓글 CRUD, 글목록 검색 작업, 다중 이미지, 다중 파일 업,다운로드
    + 설명 : 자유, 익명, 중고게시판으로 나누어져 있으며,
